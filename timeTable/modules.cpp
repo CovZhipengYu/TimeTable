@@ -51,8 +51,8 @@ bool Modules::processOption(int option)
 			lecturesList = Lectures::listLectures(db);
 			SELECT : std::cout << "Enter Option :";
 			std::cin >> option;
-			it = find(lecturesList.begin(), lecturesList.end(), option);
-			if (it == lecturesList.end()) {
+			
+			if (option < 0 || option > lecturesList.size() ) {
 				std::cout << "Wrong Option !\n";
 				goto SELECT;
 			}
@@ -100,6 +100,7 @@ vector<Modules> Modules::listModules(sqlite3* db)
 			Modules modules(sqlite3_column_int(stmt, 0), (char*)sqlite3_column_text(stmt, 1), (char*)sqlite3_column_text(stmt, 2), sqlite3_column_int(stmt, 3) , sqlite3_column_int(stmt, 4));
 			std::cout << "Modules " << to_string(i) << " : name = " << modules.name << ", code = " << modules.code << ", Id = " << to_string(modules.id) << endl;
 			modulesList.push_back(modules);
+			i++;
 		}
 	}
 	else {

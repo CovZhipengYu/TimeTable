@@ -1,9 +1,9 @@
-﻿  basicObject.cpp
-  classes.cpp
+﻿  classes.cpp
+D:\Users\zc-pc\C++\timeTable\timeTable\classes.cpp(85,14): warning C4018: “<”: 有符号/无符号不匹配
   lectures.cpp
-  modules.cpp
-  rooms.cpp
+D:\Users\zc-pc\C++\timeTable\timeTable\lectures.cpp(156,27): warning C4018: “>”: 有符号/无符号不匹配
   students.cpp
+D:\Users\zc-pc\C++\timeTable\timeTable\students.cpp(104,17): error C3861: “listStudent”: 找不到标识符
+D:\Users\zc-pc\C++\timeTable\timeTable\students.cpp(107,14): warning C4018: “<”: 有符号/无符号不匹配
   timeTable.cpp
   正在生成代码...
-  timeTable.vcxproj -> D:\Users\zc-pc\C++\timeTable\timeTable\Debug\timeTable.exe

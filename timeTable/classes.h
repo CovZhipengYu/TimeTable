@@ -15,13 +15,14 @@ class Classes : public BasicObject
 		Classes(int lid, string nam, string cod, Grade grade, string mList, sqlite3* ndb);
 		bool processOption(int option);
 		void createTable();
-		void creaateOne();
+		bool creaateOne();
 		bool editeOne();
 		bool updateSelf();
 		static vector<Classes > listClasses(sqlite3* db);
-		void addModules(Modules modules);
-		void deleteModules(vector<Modules>::iterator index );
-		void updateModules();
+		bool addModules(Modules modules);
+		bool deleteModules(vector<Modules>::iterator index );
+		bool updateModules();
+		void showModules();
 
 
 };

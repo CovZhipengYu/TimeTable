@@ -4,9 +4,7 @@ int Classes::manageTable()
 {
 	int option = -1;
 	BasicObject::showTable("classes");
-	std::cout << "6.List students.\n";
-	std::cout << "7.List modules.\n";
-	std::cout << "8.Add modules.\n";
+
 	std::cout << "Enter option:";
 	std::cin >> option;
 	return option;
@@ -37,28 +35,28 @@ Classes::Classes(int lid ,string nam, string cod, Grade grad ,string mList, sqli
 bool Classes::processOption(int option )
 {	
 	bool result;
-
+	vector<Classes> classesList;
+	Classes nowClasses;
 	switch (option)
 	{
 	case 1:
 		createTable( );
 		break;
 	case 2:
-		std::cout << "Enter class code:";
+		CODE : std::cout << "Enter class code:";
 		std::cin >> code;
 		result = BasicObject::searchByCode("classes");
 		if (result) {
 			std::cout << "\nThis code has been used please enter another one:";
-			return false;
+			goto CODE;
 		}
 		else {
-			std::cout << "\nEnter class name:";
+			std::cout << "Enter class name:";
 			std::cin >>  name ;
-			std::cout << "\nChoose class grade:0 -> grade1 , 1 -> grade2 , 2 -> grade3 ";
+			std::cout << "Choose class grade:0 -> grade1 , 1 -> grade2 , 2 -> grade3 ";
 			std::cin >> option;
 			grade = (Grade) option;
-			creaateOne();
-			return true;
+			return creaateOne();
 		}
 		break;
 	case 3:
@@ -80,6 +78,16 @@ bool Classes::processOption(int option )
 		std::cout << "Enter code:";
 		std::cin >> code;
 		return BasicObject::deleteByCode("classes");
+	case 5:
+		classesList = listClasses(db);
+		std::cout << "Select one to edite:";
+		std::cin >> option;
+		if (option < classesList.size() ) {
+			nowClasses = classesList[option];
+			return nowClasses.editeOne();
+		}else{
+			return false;
+		}
 	default:
 		break;
 	}
@@ -105,7 +113,7 @@ void Classes::createTable()
 	}
 }
 
-void Classes::creaateOne()
+bool Classes::creaateOne()
 {
 	std::string sql,isList;
 	char* zErrMsg = 0;
@@ -122,25 +130,102 @@ void Classes::creaateOne()
 	if (result != SQLITE_OK) {
 		std::cout << "SQL error: " << zErrMsg << endl;
 		sqlite3_free(zErrMsg);
+		return false;
 	}
 	else {
 		std::cout << "Add success !" << endl;
+		return true;
 	}
 }
 
-void Classes::addModules(Modules modules )
+bool Classes::addModules(Modules modules )
 {
 	modulesList.push_back(modules);
-	updateModules();
+	return updateModules();
 }
 
-void Classes::deleteModules(vector<Modules>::iterator index)
+bool Classes::editeOne()
+{
+	int option = -1;
+	bool  result;
+	vector<Modules> List;
+
+
+	std::cout << "0.return.\n";
+	std::cout << "1.Change name.\n";
+	std::cout << "2.Change code.\n";
+	std::cout << "3.Add modules.\n";
+	std::cout << "4.Delete modules.\n";
+	std::cout << "5.List students.\n";
+	std::cout << "Enter option:";
+	std::cin >> option;
+
+	switch (option)
+	{
+	case 0:
+		return false;
+	case 1:
+		std::cout << "\nEnter class name:";
+		std::cin >> name;
+		return updateSelf();
+	case 2:
+	CODE: std::cout << "Enter class code:";
+		std::cin >> code;
+		result = BasicObject::searchByCode("classes");
+		if (result) {
+			std::cout << "\nThis code has been used please enter another one:";
+			goto CODE;
+		}
+		else {
+			return updateSelf();
+		}
+	case 3:
+		std::cout << "\nSelect one module to add:";
+		List = Modules::listModules(db);
+		std::cout << "Enter option:";
+		std::cin >> option;
+		return addModules( List[option]);
+	case 4:
+		std::cout << "\nSelect one module to delete:";
+		showModules();
+		std::cout << "Enter option:";
+		std::cin >> option;
+		return deleteModules( modulesList.begin() + option);
+
+	default:
+		break;
+	}
+	return false;
+}
+
+bool Classes::deleteModules(vector<Modules>::iterator index)
 {
 	modulesList.erase(index);
-	updateModules();
+	return updateModules();
 }
 
-void Classes::updateModules()
+bool Classes::updateSelf()
+{
+	std::string sql, isList;
+	char* zErrMsg = 0;
+	int result;
+	sql = "UPDATE classes SET "  \
+		"NAME = '" + name + "' " \
+		"CODE = '" + code + "' " \
+		"WHERE id = " + to_string(id) + ";";
+	result = sqlite3_exec(db, sql.c_str(), 0, 0, &zErrMsg);
+	if (result != SQLITE_OK) {
+		std::cout << "SQL error: " << zErrMsg << endl;
+		sqlite3_free(zErrMsg);
+		return false;
+	}
+	else {
+		std::cout << "Update success !" << endl;
+		return true;
+	}
+}
+
+bool Classes::updateModules()
 {
 	std::string sql, isList;
 	char* zErrMsg = 0;
@@ -157,6 +242,19 @@ void Classes::updateModules()
 	if (result != SQLITE_OK) {
 		std::cout << "SQL error: " << zErrMsg << endl;
 		sqlite3_free(zErrMsg);
+		return false;
+	}
+	return true;
+}
+
+void Classes::showModules()
+{
+	int index = 0;
+	for (vector<Modules>::iterator it = modulesList.begin(); it != modulesList.end(); it++) {
+		Modules modules = *it;
+		std::cout << "Modules " << to_string(index) << " : name = " << modules.name << ", code = " << modules.code << ", Id = " << to_string(modules.id) << endl;
+		index++;
+		
 	}
 }
 
@@ -171,8 +269,7 @@ vector<Classes> Classes::listClasses(sqlite3* db)
 	if (result == SQLITE_OK) {
 		while (sqlite3_step(stmt) == SQLITE_ROW) {
 			Classes classes( sqlite3_column_int(stmt, 0), (char*)sqlite3_column_text(stmt, 1), (char*)sqlite3_column_text(stmt, 2), (Grade)sqlite3_column_int(stmt, 3) , (char*)sqlite3_column_text(stmt, 4),db);
-			int age = sqlite3_column_int(stmt, 1);
-			std::cout << "Lecture" << to_string(i) << " : name = " << classes.name << ", code = " << classes.code << ", Id = " << to_string(classes.id) << endl;
+			std::cout << "Classes" << to_string(i) << " : name = " << classes.name << ", code = " << classes.code << ", Id = " << to_string(classes.id) << endl;
 			classesList.push_back(classes);
 		}
 	}

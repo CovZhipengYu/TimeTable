@@ -37,17 +37,17 @@ bool Lectures::processOption(int option)
 		createTable();
 		break;
 	case 2:
-		std::cout << "Enter lecture's code:";
+		CODE : std::cout << "\nEnter lecture's code:";
 		std::cin >> code;
 		result = BasicObject::searchByCode("lectures");
 		if (result) {
-			std::cout << "\nThis code has been used please enter another one:";
-			return false;
+			std::cout << "This code has been used please enter another one:";
+			goto CODE;
 		}
 		else {
-			std::cout << "\nEnter lectures name:";
+			std::cout << "Enter lectures name:";
 			std::cin >> name;
-			std::cout << "\nEnter lectures tel number :";
+			std::cout << "Enter lectures tel number :";
 			std::cin >> mobile;
 			creaateOne();
 			return true;
@@ -132,6 +132,7 @@ vector<Lectures> Lectures::listLectures(sqlite3* db)
 			Lectures lectures( sqlite3_column_int(stmt, 0) , (char*)sqlite3_column_text(stmt, 1), (char*)sqlite3_column_text(stmt, 2), (char*)sqlite3_column_text(stmt, 3));
 			std::cout << "Lecture "<< to_string(i) <<" : name = " << lectures.name << ", code = " << lectures.code << ", Id = " << to_string(lectures.id) << endl;
 			lecturesList.push_back(lectures);
+			i++;
 		}
 	}
 	else {
@@ -145,7 +146,6 @@ vector<Lectures> Lectures::listLectures(sqlite3* db)
 bool Lectures::editeOne()
 {
 	vector< Lectures > lecturesList;
-	vector<Lectures>::iterator it;
 	int option;
 	bool result;
 
@@ -153,8 +153,7 @@ bool Lectures::editeOne()
 	lecturesList = listLectures(db);
 SELECT: std::cout << "Enter Option :";
 	std::cin >> option;
-	it = find(lecturesList.begin(), lecturesList.end(), option);
-	if (it == lecturesList.end()) {
+	if (option < 0 || option > lecturesList.size() ) {
 		std::cout << "Wrong Option !\n";
 		goto SELECT;
 	}

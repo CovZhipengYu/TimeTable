@@ -10,8 +10,14 @@ class Student : public BasicObject
 		Classes classes;
 		Grade grade;
 		int  manageTable();
+		Student();
 		Student(sqlite3* ndb);
-		Student(std::string nam, std::string cod , std::string mobile , Grade grade );
+		Student(int lid, std::string nam, std::string cod , std::string mobile , Grade grade , int classId);
 		void createTable();
+		bool processOption(int option);
+		bool creaateOne();
+		bool editeOne();
+		bool updateSelf();
+		static vector<Student> listStudents(sqlite3* ndb);
 };
 
