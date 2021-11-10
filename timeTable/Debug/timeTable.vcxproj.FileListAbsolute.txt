@@ -1,0 +1,3 @@
+D:\Users\zc-pc\C++\timeTable\timeTable\Debug\timeTable.exe
+D:\Users\zc-pc\C++\timeTable\timeTable\Debug\sqlite3.dll
+D:\Users\zc-pc\C++\timeTable\timeTable\Debug\jsoncpp.dll
